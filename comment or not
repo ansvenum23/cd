@@ -1,0 +1,10 @@
+BEGIN
+    FUNCTION isComment(string line):
+        IF line starts with "//" THEN
+            PRINT "Single-line comment"
+        ELSE IF line starts with "/*" AND ends with "*/" THEN
+            PRINT "Multi-line comment"
+        ELSE
+            PRINT "Not a comment"
+        ENDIF
+END
