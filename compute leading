@@ -1,0 +1,65 @@
+BEGIN  
+    INITIALIZE Leading sets for E, T, F  
+    CALL Compute_Leading(E)  
+    CALL Compute_Leading(T)  
+    CALL Compute_Leading(F)  
+    PRINT Leading sets  
+END  
+
+FUNCTION Compute_Leading(NON_TERMINAL X):  
+    FOR each production rule X → α  
+        IF α starts with a terminal symbol:  
+            ADD α to LEADING(X)  
+        ELSE IF α starts with a non-terminal Y:  
+            CALL Compute_Leading(Y)  
+            ADD LEADING(Y) to LEADING(X)  
+        ELSE IF α starts with ‘(’:  
+            ADD ‘(’ to LEADING(X)  
+END
+
+
+
+
+#include <stdio.h>
+#include <string.h>
+
+char grammar[][10] = { "E+T", "T", "T*F", "F", "(E)", "i" };
+char leading_E[10], leading_T[10], leading_F[10];
+int lead_E_count = 0, lead_T_count = 0, lead_F_count = 0;
+
+void addLeading(char set[], int *count, char term) {
+    for (int i = 0; i < *count; i++) if (set[i] == term) return;
+    set[(*count)++] = term;
+}
+
+void computeLeading(char nt) {
+    for (int i = 0; i < 6; i++) {
+        if (grammar[i][0] == nt && strchr("+-*(i", grammar[i][1])) {
+            if (nt == 'E') addLeading(leading_E, &lead_E_count, grammar[i][1]);
+            else if (nt == 'T') addLeading(leading_T, &lead_T_count, grammar[i][1]);
+            else addLeading(leading_F, &lead_F_count, grammar[i][1]);
+        }
+    }
+}
+
+void printLeading(char nt, char set[], int count) {
+    printf("\nLEADING(%c) = { ", nt);
+    for (int i = 0; i < count; i++) printf("%c%s", set[i], (i < count - 1) ? ", " : " ");
+    printf("}");
+}
+
+int main() {
+    computeLeading('E'); computeLeading('T'); computeLeading('F');
+    printLeading('E', leading_E, lead_E_count);
+    printLeading('T', leading_T, lead_T_count);
+    printLeading('F', leading_F, lead_F_count);
+    return 0;
+}
+
+
+
+
+LEADING(E) = { +, *, (, i }
+LEADING(T) = { *, (, i }
+LEADING(F) = { (, i }
+
