@@ -1,0 +1,84 @@
+BEGIN
+    READ number of productions
+    FOR each production P:
+        DISPLAY production P
+        LET non_terminal = LHS of P
+        IF non_terminal appears at the start of RHS:
+            MARK production as left recursive
+            FIND α (recursive part)
+            FIND β (non-recursive part)
+            IF β exists:
+                PRINT "Grammar without left recursion:"
+                PRINT new productions:
+                    non_terminal → β non_terminal'
+                    non_terminal' → α non_terminal' | ε
+            ELSE:
+                PRINT "Left recursion cannot be removed"
+        ELSE:
+            PRINT "Not left recursive"
+    END FOR
+END
+
+
+
+#include <stdio.h>
+#include <string.h>
+
+#define SIZE 10
+
+int main() {
+    char non_terminal, alpha, beta;
+    int num, index = 3;
+    char production[SIZE][SIZE];
+
+    printf("Enter Number of Productions: ");
+    scanf("%d", &num);
+
+    printf("Enter grammar (e.g., E->E-A):\n");
+    for (int i = 0; i < num; i++) {
+        scanf("%s", production[i]);
+    }
+
+    for (int i = 0; i < num; i++) {
+        printf("\nGRAMMAR: %s", production[i]);
+        non_terminal = production[i][0];
+
+        if (non_terminal == production[i][index]) {  
+            printf(" is left recursive.\n");
+
+            alpha = production[i][index + 1];  
+            while (production[i][index] != '\0' && production[i][index] != '|')
+                index++;
+
+            if (production[i][index] != '\0') {  
+                beta = production[i][index + 1];
+
+                printf("Grammar without left recursion:\n");
+                printf("%c->%c%c'\n", non_terminal, beta, non_terminal);
+                printf("%c'->%c%c'|E\n", non_terminal, alpha, non_terminal);
+            } else {
+                printf(" cannot be reduced\n");
+            }
+        } else {
+            printf(" is not left recursive.\n");
+        }
+        index = 3;
+    }
+}
+
+
+
+
+
+Enter Number of Productions: 2
+Enter grammar:
+S->(L)|a
+L->L,S|S
+
+GRAMMAR: S->(L)|a is not left recursive.
+GRAMMAR: L->L,S|S is left recursive.
+Grammar without left recursion:
+L->S L'
+L'->, L' | ε
+
+
