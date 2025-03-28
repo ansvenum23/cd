@@ -1,0 +1,164 @@
+BEGIN  
+    FUNCTION find_follow(ch):  
+        IF ch is the start symbol THEN  
+            ADD '$' to FOLLOW(ch)  
+        ENDIF  
+
+        FOR each production P in productionSet:  
+            FOR each occurrence of ch in RHS of P:  
+                IF ch is followed by a symbol X THEN  
+                    COMPUTE FIRST(X)  
+                    ADD FIRST(X) - {ε} to FOLLOW(ch)  
+                    IF ε ∈ FIRST(X) THEN  
+                        COMPUTE FOLLOW(LHS of P)  
+                        ADD FOLLOW(LHS of P) to FOLLOW(ch)  
+                ELSE  
+                    COMPUTE FOLLOW(LHS of P)  
+                    ADD FOLLOW(LHS of P) to FOLLOW(ch)  
+            END FOR  
+        END FOR  
+    END FUNCTION  
+
+    FUNCTION find_first(ch):  
+        IF ch is a terminal THEN  
+            ADD ch to FIRST(ch)  
+        ELSE  
+            FOR each production P where ch is LHS:  
+                IF RHS starts with ε THEN  
+                    ADD FOLLOW(LHS) to FIRST(ch)  
+                ELSE  
+                    COMPUTE FIRST(first symbol of RHS)  
+                    ADD elements to FIRST(ch)  
+            END FOR  
+        ENDIF  
+    END FUNCTION  
+
+    FUNCTION Array_Manipulation(ch):  
+        IF ch is NOT already in array THEN  
+            ADD ch to array  
+        ENDIF  
+    END FUNCTION  
+
+    MAIN PROGRAM:  
+        READ numOfProductions  
+        FOR i = 1 to numOfProductions:  
+            READ production i  
+        END FOR  
+
+        DO  
+            READ character c  
+            CALL find_follow(c)  
+            PRINT FOLLOW(c)  
+        WHILE user wants to continue  
+
+    END  
+
+    #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int limit, x = 0;
+char production[10][10], array[10];
+
+void find_first(char ch);
+void find_follow(char ch);
+void Array_Manipulation(char ch);
+
+int main() {
+    int i;
+    char ch, option;
+    
+    printf("\nEnter Total Number of Productions: ");
+    scanf("%d", &limit);
+    
+    for (i = 0; i < limit; i++) {
+        printf("\nProduction [%d]: ", i + 1);
+        scanf("%s", production[i]);
+    }
+
+    do {
+        x = 0;
+        printf("\nFind FOLLOW of: ");
+        scanf(" %c", &ch);
+        find_follow(ch);
+
+        printf("\nFOLLOW(%c) = { ", ch);
+        for (i = 0; i < x; i++) 
+            printf("%c ", array[i]);
+        printf("}\n");
+
+        printf("Press 'y' to continue: ");
+        scanf(" %c", &option);
+    } while (option == 'y' || option == 'Y');
+
+    return 0;
+}
+
+void find_follow(char ch) {
+    int i, j;
+    
+    if (production[0][0] == ch)  
+        Array_Manipulation('$');  
+
+    for (i = 0; i < limit; i++) {
+        int len = strlen(production[i]);
+        for (j = 2; j < len; j++) {
+            if (production[i][j] == ch) {
+                if (production[i][j + 1] != '\0')  
+                    find_first(production[i][j + 1]);
+                if (production[i][j + 1] == '\0' && ch != production[i][0])  
+                    find_follow(production[i][0]);
+            }
+        }
+    }
+}
+
+void find_first(char ch) {
+    int i, k;
+    
+    if (!isupper(ch)) {  
+        Array_Manipulation(ch);
+        return;
+    }
+
+    for (k = 0; k < limit; k++) {
+        if (production[k][0] == ch) {
+            if (production[k][2] == '$')  
+                find_follow(production[k][0]);
+            else  
+                find_first(production[k][2]);
+        }
+    }
+}
+
+void Array_Manipulation(char ch) {
+    int i;
+    
+    for (i = 0; i < x; i++) {
+        if (array[i] == ch)  
+            return;
+    }
+
+    array[x++] = ch;
+}
+
+
+
+
+Enter Total Number of Productions: 4
+Production [1]: S=AaAb
+Production [2]: S=BbBa
+Production [3]: A=$
+Production [4]: B=$
+
+Find FOLLOW of: S
+FOLLOW(S) = { $ }
+Press 'y' to continue: y
+
+Find FOLLOW of: A
+FOLLOW(A) = { a b }
+Press 'y' to continue: y
+
+Find FOLLOW of: B
+FOLLOW(B) = { b a }
+Press 'y' to continue: n
