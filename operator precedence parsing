@@ -1,0 +1,125 @@
+BEGIN
+    READ input expression
+    APPEND '$' to input (end marker)
+    INITIALIZE stack with '$'
+    
+    WHILE input is not fully parsed:
+        PERFORM shift operation (push next input symbol onto stack)
+        PRINT stack, input, action
+        
+        IF top of stack has higher precedence over input:
+            REPEAT reduce operation:
+                CHECK for a valid handle in stack
+                REPLACE handle with 'E'
+                PRINT stack, input, reduction step
+
+    IF stack contains "$E$":
+        PRINT "Accepted"
+    ELSE:
+        PRINT "Not Accepted"
+END
+
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+char *input, stack[50], handles[][5] = {")E(", "E*E", "E+E", "i", "E^E"};
+int top = 0, i = 0, l;
+char prec[9][9] = { 
+    /* +  -  *  /  ^  i  (  )  $ */
+    {'>', '>', '<', '<', '<', '<', '<', '>', '>'},  // +
+    {'>', '>', '<', '<', '<', '<', '<', '>', '>'},  // -
+    {'>', '>', '>', '>', '<', '<', '<', '>', '>'},  // *
+    {'>', '>', '>', '>', '<', '<', '<', '>', '>'},  // /
+    {'>', '>', '>', '>', '>', '<', '<', '>', '>'},  // ^
+    {'>', '>', '>', '>', '>', 'e', 'e', '>', '>'},  // i
+    {'<', '<', '<', '<', '<', '<', '<', '>', 'e'},  // (
+    {'>', '>', '>', '>', '>', 'e', 'e', '>', '>'},  // )
+    {'<', '<', '<', '<', '<', '<', '<', '<', '>'}   // $
+};
+
+int getindex(char c) {
+    switch (c) {
+        case '+': return 0; case '-': return 1; case '*': return 2;
+        case '/': return 3; case '^': return 4; case 'i': return 5;
+        case '(': return 6; case ')': return 7; case '$': return 8;
+    }
+    return -1;
+}
+
+void shift() {
+    stack[++top] = input[i++];
+    stack[top + 1] = '\0';
+}
+
+int reduce() {
+    int len, found, t;
+    for (int j = 0; j < 5; j++) {
+        len = strlen(handles[j]);
+        if (stack[top] == handles[j][0] && top + 1 >= len) {
+            found = 1;
+            for (t = 0; t < len; t++) 
+                if (stack[top - t] != handles[j][t]) { found = 0; break; }
+            if (found) {
+                stack[top - t + 1] = 'E';
+                top = top - t + 1;
+                stack[top + 1] = '\0';
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void display() {
+    printf("\n%s\t%s\t", stack, input + i);
+}
+
+int main() {
+    input = (char *)malloc(50 * sizeof(char));
+    printf("\nEnter the string: ");
+    scanf("%s", input);
+    strcat(input, "$");
+    l = strlen(input);
+    strcpy(stack, "$");
+
+    printf("\nSTACK\tINPUT\tACTION");
+    while (i <= l) {
+        shift();
+        display();
+        printf("Shift");
+        while (prec[getindex(stack[top])][getindex(input[i])] == '>') {
+            while (reduce()) {
+                display();
+                printf("Reduced");
+            }
+        }
+    }
+
+    printf("\n%s", strcmp(stack, "$E$") == 0 ? "Accepted;" : "Not Accepted;");
+    free(input);
+    return 0;
+}
+
+
+
+
+
+
+Enter the string: i*(i+i)*i
+STACK    INPUT      ACTION
+$        i*(i+i)*i$ Shift
+$E       *(i+i)*i$ Reduced
+$E*      (i+i)*i$ Shift
+$E*(     i+i)*i$ Shift
+$E*(E    +i)*i$ Reduced
+$E*(E+   i)*i$ Shift
+$E*(E+E  )*i$ Reduced
+$E*(E)   *i$ Reduced
+$E*E     *i$ Reduced
+$E*E*    i$ Shift
+$E*E*E   $ Reduced
+$E       $ Reduced
+Accepted;
