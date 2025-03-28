@@ -1,0 +1,192 @@
+BEGIN
+    Initialize symbol count to 0
+    DO
+        DISPLAY menu options:
+        1. Insert symbol
+        2. Display symbol table
+        3. Search for a symbol
+        4. Modify symbol address
+        5. Exit
+        READ user choice
+        SWITCH choice:
+            CASE 1: INSERT()
+                READ label
+                IF label exists in table:
+                    PRINT "Duplicate symbol"
+                ELSE:
+                    ADD label and address to table
+            CASE 2: DISPLAY()
+                PRINT all stored symbols and addresses
+            CASE 3: SEARCH()
+                READ label
+                IF label exists:
+                    PRINT "Label found"
+                ELSE:
+                    PRINT "Label not found"
+            CASE 4: MODIFY()
+                READ label
+                IF label exists:
+                    UPDATE address
+                ELSE:
+                    PRINT "No such symbol"
+            CASE 5: EXIT program
+END
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct symtab {
+    char label[20];
+    int addr;
+} sy[50];
+
+int cnt = 0;
+
+void insert();
+int search(char *);
+void display();
+void modify();
+
+int main() {
+    int ch, val;
+    char lab[10];
+
+    do {
+        printf("\n1. Insert\n2. Display\n3. Search\n4. Modify\n5. Exit\n");
+        scanf("%d", &ch);
+
+        switch (ch) {
+            case 1:
+                insert();
+                break;
+            case 2:
+                display();
+                break;
+            case 3:
+                printf("Enter the label: ");
+                scanf("%s", lab);
+                val = search(lab);
+                if (val == 1)
+                    printf("Label is found\n");
+                else
+                    printf("Label is not found\n");
+                break;
+            case 4:
+                modify();
+                break;
+            case 5:
+                exit(0);
+        }
+    } while (ch < 5);
+}
+
+void insert() {
+    char lab[10];
+    int val;
+
+    printf("Enter the label: ");
+    scanf("%s", lab);
+    val = search(lab);
+
+    if (val == 1)
+        printf("Duplicate symbol\n");
+    else {
+        strcpy(sy[cnt].label, lab);
+        printf("Enter the address: ");
+        scanf("%d", &sy[cnt].addr);
+        cnt++;
+    }
+}
+
+int search(char *s) {
+    for (int i = 0; i < cnt; i++) {
+        if (strcmp(sy[i].label, s) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+void modify() {
+    char lab[10];
+    int val, ad;
+
+    printf("Enter the label: ");
+    scanf("%s", lab);
+    val = search(lab);
+
+    if (val == 0)
+        printf("No such symbol\n");
+    else {
+        printf("Label is found\n");
+        printf("Enter the new address: ");
+        scanf("%d", &ad);
+
+        for (int i = 0; i < cnt; i++) {
+            if (strcmp(sy[i].label, lab) == 0)
+                sy[i].addr = ad;
+        }
+    }
+}
+
+void display() {
+    printf("\nSymbol Table:\n");
+    printf("Label\tAddress\n");
+    printf("----------------\n");
+
+    for (int i = 0; i < cnt; i++)
+        printf("%s\t%d\n", sy[i].label, sy[i].addr);
+}
+
+
+
+
+
+1. Insert
+2. Display
+3. Search
+4. Modify
+5. Exit
+1
+Enter the label: a
+Enter the address: 100
+1. Insert
+2. Display
+3. Search
+4. Modify
+5. Exit
+2
+Symbol Table:
+Label    Address
+----------------
+a        100
+1. Insert
+2. Display
+3. Search
+4. Modify
+5. Exit
+3
+Enter the label: a
+Label is found
+1. Insert
+2. Display
+3. Search
+4. Modify
+5. Exit
+4
+Enter the label: a
+Label is found
+Enter the new address: 200
+1. Insert
+2. Display
+3. Search
+4. Modify
+5. Exit
+2
+Symbol Table:
+Label    Address
+----------------
+a        200
+
