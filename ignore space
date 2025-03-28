@@ -1,0 +1,16 @@
+BEGIN
+    FUNCTION processCode(string code):
+        SET i = 0
+        WHILE i < length of code:
+            IF code[i] is SPACE or TAB or NEWLINE THEN
+                SKIP
+            ELSE IF code[i] == '/' AND code[i+1] == '/' THEN
+                SKIP until NEWLINE
+            ELSE IF code[i] == '/' AND code[i+1] == '*' THEN
+                SKIP until "*/"
+            ELSE
+                PRINT code[i]  // Process valid code
+            ENDIF
+            INCREMENT i
+        ENDWHILE
+END
