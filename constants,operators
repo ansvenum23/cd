@@ -18,3 +18,37 @@ BEGIN
             INCREMENT i
         ENDWHILE
 END
+
+
+
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int main() {
+    char input[100], id[30], op[10], num[10];
+    int ic = 0, oc = 0, cc = 0;
+
+    printf("Enter the string: ");
+    scanf(" %[^\n]", input);
+
+    for (int i = 0; i < strlen(input); i++) {
+        if (isspace(input[i])) continue;
+        else if (isalpha(input[i])) id[ic++] = input[i];
+        else if (isdigit(input[i])) num[cc++] = input[i];
+        else if (strchr("+-*/=<>", input[i])) op[oc++] = input[i];
+    }
+
+    id[ic] = num[cc] = op[oc] = '\0';
+
+    printf("Identifiers: %s\nConstants: %s\nOperators: %s\n", id, num, op);
+    return 0;
+}
+
+
+Enter the string: a = b + c * e + 100
+Identifiers: abce
+Constants: 100
+Operators: =+*+
+
