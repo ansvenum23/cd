@@ -1,0 +1,145 @@
+BEGIN
+    READ input string
+    CALL E()
+    IF input is fully parsed:
+        PRINT "String is accepted"
+    ELSE:
+        PRINT "String is not accepted"
+END
+
+FUNCTION E():
+    CALL T()
+    CALL EP()
+
+FUNCTION EP():
+    IF next symbol is '+':
+        ADVANCE input pointer
+        CALL T()
+        CALL EP()
+
+FUNCTION T():
+    CALL F()
+    CALL TP()
+
+FUNCTION TP():
+    IF next symbol is '*':
+        ADVANCE input pointer
+        CALL F()
+        CALL TP()
+
+FUNCTION F():
+    IF next symbol is '(':
+        ADVANCE input pointer
+        CALL E()
+        IF next symbol is ')':
+            ADVANCE input pointer
+        ELSE:
+            RETURN false
+    ELSE IF next symbol is an identifier:
+        ADVANCE input pointer
+    ELSE:
+        RETURN false
+
+
+
+
+#include <stdio.h>
+#include <string.h>
+
+char input[100];
+int i = 0;
+
+int E();
+int EP();
+int T();
+int TP();
+int F();
+
+int main() {
+    printf("\nRecursive descent parsing for the following grammar:\n");
+    printf("E  -> TE'\nE' -> +TE' | ε\nT  -> FT'\nT' -> *FT' | ε\nF  -> (E) | id\n");
+
+    printf("\nEnter the string to be checked: ");
+    gets(input);
+
+    if (E() && input[i] == '\0')
+        printf("\nString is accepted\n");
+    else
+        printf("\nString is not accepted\n");
+
+    return 0;
+}
+
+int E() {
+    if (T()) {
+        return EP();
+    }
+    return 0;
+}
+
+int EP() {
+    if (input[i] == '+') {
+        i++;
+        if (T()) {
+            return EP();
+        }
+        return 0;
+    }
+    return 1;
+}
+
+int T() {
+    if (F()) {
+        return TP();
+    }
+    return 0;
+}
+
+int TP() {
+    if (input[i] == '*') {
+        i++;
+        if (F()) {
+            return TP();
+        }
+        return 0;
+    }
+    return 1;
+}
+
+int F() {
+    if (input[i] == '(') {
+        i++;
+        if (E()) {
+            if (input[i] == ')') {
+                i++;
+                return 1;
+            }
+            return 0;
+        }
+        return 0;
+    } else if ((input[i] >= 'a' && input[i] <= 'z') || (input[i] >= 'A' && input[i] <= 'Z')) {
+        i++;
+        return 1;
+    }
+    return 0;
+}
+
+
+
+
+
+
+
+
+Recursive descent parsing for the following grammar:
+E  -> TE'
+E' -> +TE' | ε
+T  -> FT'
+T' -> *FT' | ε
+F  -> (E) | id
+
+Enter the string to be checked: (a+b)*c
+String is accepted
+
+Enter the string to be checked: a/c+d
+String is not accepted
