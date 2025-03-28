@@ -1,0 +1,50 @@
+BEGIN  
+    Initialize flag = 1, i = 1  
+    READ input string  
+
+    IF first character is not a letter THEN  
+        Set flag = 0  
+    ELSE  
+        WHILE character at position i is not end of string DO  
+            IF character is not a letter or digit THEN  
+                Set flag = 0  
+                BREAK  
+            ENDIF  
+            Increment i  
+        ENDWHILE  
+    ENDIF  
+
+    IF flag == 1 THEN  
+        PRINT "Valid identifier"  
+    ELSE  
+        PRINT "Not a valid identifier"  
+    ENDIF  
+END  
+
+#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char a[10];
+    int flag = 1, i = 1;
+
+    printf("Enter an identifier: ");
+    fgets(a, sizeof(a), stdin);
+
+    if (isalpha(a[0])) {
+        while (a[i] != '\0') {
+            if (!isalnum(a[i])) {
+                flag = 0; break;
+            }
+            i++;
+        }
+    } else flag = 0;
+
+    printf(flag ? "Valid identifier\n" : "Not a valid identifier\n");
+    return 0;
+}
+
+      abc123
+Valid identifier
+1abc
+Not a valid identifier
