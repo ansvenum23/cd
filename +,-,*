@@ -1,0 +1,10 @@
+BEGIN
+    FUNCTION validateOperator(string input):
+        FOR each character in input:
+            IF character == '+' OR character == '-' OR character == '*' THEN
+                PRINT "Valid operator:", character
+            ELSE
+                PRINT "Invalid operator"
+            ENDIF
+        END FOR
+END
