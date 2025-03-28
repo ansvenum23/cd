@@ -1,0 +1,109 @@
+BEGIN
+    READ input string
+    INITIALIZE stack as empty
+    SET input pointer to the first symbol
+
+    WHILE input string is not fully parsed:
+        PUSH next symbol onto stack
+        PRINT stack, remaining input, and action "Shift"
+        CALL CHECK()
+
+    CALL CHECK()  // Final check after all shifts
+
+    IF stack contains only 'E' and input is empty:
+        PRINT "String is accepted"
+    ELSE:
+        PRINT "String is not accepted"
+END
+
+FUNCTION CHECK():
+    WHILE possible reductions exist in stack:
+        IF stack contains "a" or "b":
+            REPLACE "a" or "b" with "E"
+            PRINT stack, input, and action "E → a/b"
+        
+        ELSE IF stack contains "E+E" OR "E/E" OR "E*E":
+            REPLACE "E+E", "E/E", or "E*E" with "E"
+            PRINT stack, input, and action "E → E operator E"
+        
+        ELSE:
+            RETURN  // No further reductions possible
+
+    IF stack contains only 'E' and input is empty:
+        PRINT "ACCEPT"
+    ELSE:
+        PRINT "REJECT"
+        TERMINATE
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char stack[15], ip_sym[15];
+int st_ptr = 0, ip_ptr = 0, len;
+
+void check() {
+    while (st_ptr >= 0) {
+        if (stack[st_ptr] == 'a' || stack[st_ptr] == 'b') {
+            stack[st_ptr] = 'E';
+            printf("\n $%s\t\t%s$\t\t\tE->%c", stack, ip_sym, stack[st_ptr]);
+        } else if (strcmp(stack, "E+E") == 0 || strcmp(stack, "E/E") == 0 || strcmp(stack, "E*E") == 0) {
+            strcpy(stack, "E");
+            st_ptr = 0;
+            printf("\n $%s\t\t%s$\t\t\tE->E operator E", stack, ip_sym);
+        }
+
+        if (strcmp(stack, "E") == 0 && ip_ptr == len) {
+            printf("\n $%s\t\t%s$\t\t\tACCEPT", stack, ip_sym);
+            exit(0);
+        }
+    }
+}
+
+int main() {
+    printf("\n\t\t SHIFT REDUCE PARSER\n");
+    printf("\n GRAMMAR\n");
+    printf("\n E->E+E\n E->E/E\n E->E*E\n E->a/b\n");
+    printf("\n Enter input string: ");
+    gets(ip_sym);
+
+    len = strlen(ip_sym);
+    printf("\n\t Stack Implementation Table");
+    printf("\n Stack \t\t Input Symbol \t\t Action");
+    printf("\n $\t\t%s$\t\t\t--", ip_sym);
+
+    for (int i = 0; i < len; i++) {
+        stack[st_ptr++] = ip_sym[ip_ptr++];
+        stack[st_ptr] = '\0';
+        printf("\n $%s\t\t%s$\t\t\tShift %c", stack, &ip_sym[ip_ptr], stack[st_ptr - 1]);
+        check();
+    }
+
+    check();
+    printf("\n Reject");
+    return 0;
+}
+
+
+
+ SHIFT REDUCE PARSER
+
+ GRAMMAR
+ E->E+E
+ E->E/E
+ E->E*E
+ E->a/b
+
+ Enter input string: a+b
+
+ Stack Implementation Table
+ Stack          Input Symbol       Action
+ $             a+b$               --
+ $a           +b$                 Shift a
+ $E           +b$                 E->a
+ $E+          b$                  Shift +
+ $E+b         $                   Shift b
+ $E+E         $                   E->b
+ $E           $                   E->E+E
+ $E           $                   ACCEPT
