@@ -1,0 +1,20 @@
+BEGIN
+    DEFINE operators = ['+', '-', '*', '/', '%', '=', '<', '>', '!', '&', '|']
+    
+    FUNCTION isOperator(char ch):
+        RETURN (ch in operators)
+
+    FUNCTION isDigit(char ch):
+        RETURN (ch >= '0' AND ch <= '9')
+
+    FUNCTION lexicalAnalyzer(string input):
+        INITIALIZE i = 0
+        WHILE i < length of input:
+            IF isDigit(input[i]) THEN
+                PRINT "Constant:", input[i]
+            ELSE IF isOperator(input[i]) THEN
+                PRINT "Operator:", input[i]
+            ENDIF
+            INCREMENT i
+        ENDWHILE
+END
