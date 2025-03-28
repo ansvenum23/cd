@@ -1,0 +1,69 @@
+BEGIN
+    READ input string
+    CALL S()
+    IF input is fully parsed:
+        PRINT "String is accepted"
+    ELSE:
+        PRINT "String is not accepted"
+END
+
+FUNCTION S():
+    IF next symbol is 'a':
+        ADVANCE input pointer
+        CALL S()
+    ELSE IF next symbol is 'a' AND next symbol after some 'S' is 'b':
+        ADVANCE input pointer
+        CALL S()
+        IF next symbol is 'b':
+            ADVANCE input pointer
+        ELSE:
+            RETURN false
+    ELSE IF next symbol is "ab":
+        ADVANCE input pointer twice
+    ELSE:
+        RETURN false
+
+
+#include <stdio.h>
+#include <string.h>
+
+int S(char[], int);
+
+int main() {
+    char string[50];
+    printf("The grammar is: S -> aS | S -> Sb | S -> ab\n");
+    printf("Enter the string to be checked: ");
+    scanf("%s", string);
+
+    if (S(string, 0))
+        printf("String accepted\n");
+    else
+        printf("String not accepted\n");
+
+    return 0;
+}
+
+int S(char str[], int index) {
+    if (str[index] == 'a') {
+        if (str[index + 1] == 'b' && str[index + 2] == '\0')
+            return 1; // Matches "ab"
+        else if (S(str, index + 1))
+            return 1; // Matches "aS"
+        else if (str[index + 1] == 'S' && str[index + 2] == 'b')
+            return S(str, index + 1); // Matches "S -> Sb"
+    }
+    return 0;
+}
+
+
+
+
+The grammar is: S -> aS | S -> Sb | S -> ab
+Enter the string to be checked: abb
+String accepted
+
+
+
+The grammar is: S -> aS | S -> Sb | S -> ab
+Enter the string to be checked: aab
+String not accepted
