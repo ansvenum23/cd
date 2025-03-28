@@ -8,3 +8,25 @@ BEGIN
             PRINT "Not a comment"
         ENDIF
 END
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char com[100];
+    
+    printf("Enter a comment: ");
+    fgets(com, sizeof(com), stdin);
+
+    if (com[0] == '/' && com[1] == '/')
+        printf("It is a comment\n");
+    else if (com[0] == '/' && com[1] == '*' && strstr(com, "*/"))
+        printf("It is a comment\n");
+    else
+        printf("It is not a comment\n");
+
+    return 0;
+}
+
+Enter a comment: //hello
+It is a comment
