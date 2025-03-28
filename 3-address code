@@ -1,0 +1,95 @@
+BEGIN
+    OPEN file "sum.txt" for reading
+    OPEN file "out.txt" for writing
+    INITIALIZE temporary variable counter j = 1
+    READ input expression into an array
+
+    CREATE first temporary variable t1 for first operation
+    WRITE first operation to file
+
+    FOR each remaining operation in the expression:
+        CREATE new temporary variable t(j)
+        STORE result of operation using previous temp variable
+        WRITE operation to file
+
+    WRITE final result assignment to file
+    CLOSE both files
+END
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct three {
+    char data[10], temp[7];
+} s[30];
+
+int main() {
+    char tempVar[7], tempPrefix[3] = "t";
+    int i = 0, j = 1, len = 0;
+    FILE *inputFile, *outputFile;
+
+    // Open input and output files
+    inputFile = fopen("sum.txt", "r");
+    outputFile = fopen("out.txt", "w");
+
+    if (inputFile == NULL || outputFile == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    // Read input into struct array
+    while (fscanf(inputFile, "%s", s[len].data) != EOF)
+        len++;
+
+    // Generate first temporary variable
+    sprintf(tempVar, "t%d", j);
+    strcpy(s[j].temp, tempVar);
+
+    // Process the first operation
+    if (strcmp(s[3].data, "+") == 0)
+        fprintf(outputFile, "%s = %s + %s", s[j].temp, s[2].data, s[4].data);
+    else if (strcmp(s[3].data, "-") == 0)
+        fprintf(outputFile, "%s = %s - %s", s[j].temp, s[2].data, s[4].data);
+
+    j++;
+
+    // Process remaining operations
+    for (i = 4; i < len - 2; i += 2) {
+        sprintf(tempVar, "t%d", j);
+        strcpy(s[j].temp, tempVar);
+
+        if (strcmp(s[i + 1].data, "+") == 0)
+            fprintf(outputFile, "\n%s = %s + %s", s[j].temp, s[j - 1].temp, s[i + 2].data);
+        else if (strcmp(s[i + 1].data, "-") == 0)
+            fprintf(outputFile, "\n%s = %s - %s", s[j].temp, s[j - 1].temp, s[i + 2].data);
+
+        j++;
+    }
+
+    // Final assignment statement
+    fprintf(outputFile, "\n%s = %s", s[0].data, s[j - 1].temp);
+
+    // Close files
+    fclose(inputFile);
+    fclose(outputFile);
+
+    printf("Three-address code generated successfully in out.txt\n");
+
+    return 0;
+}
+
+
+
+
+out = in1 + in2 + in3 - in4
+
+t1 = in1 + in2
+t2 = t1 + in3
+t3 = t2 - in4
+out = t3
+
+
