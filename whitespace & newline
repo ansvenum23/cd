@@ -1,0 +1,57 @@
+BEGIN
+    Initialize words, lines, characters to 0
+    READ input string
+
+    FOR each character in string
+        IF character is space or tab THEN
+            Increment words
+        ELSE IF character is newline THEN
+            Increment lines
+        ELSE
+            Increment characters
+        ENDIF
+    ENDFOR
+
+    IF characters > 0 THEN
+        Increment words and lines (to count the last word and line)
+    ENDIF
+
+    PRINT total words, lines, characters
+END
+
+#include <stdio.h>
+
+int main() {
+    char str[100];
+    int words = 0, lines = 0, characters = 0;
+
+    printf("Enter text (max 100 chars, use ^ to end):\n");
+    scanf("%[^\^]", str);
+
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (str[i] == ' ' || str[i] == '\t') words++;
+        else if (str[i] == '\n') lines++;
+        else characters++;
+    }
+
+    if (characters > 0) { words++; lines++; }
+
+    printf("Words: %d\nLines: %d\nCharacters: %d\n", words, lines, characters);
+    return 0;
+}
+
+
+void main()  
+{  
+    int a;  
+    int b;  
+    a = b + c;  
+    c = d * e;  
+}
+
+
+
+Words: 12  
+Lines: 7  
+Characters: 34  
+
