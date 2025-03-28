@@ -14,3 +14,82 @@ BEGIN
             INCREMENT i
         ENDWHILE
 END
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+int isKeyword(char buffer[]) {
+    char keywords[32][10] = {
+        "main", "auto", "break", "case", "char", "const", "continue", "default",
+        "do", "double", "else", "enum", "extern", "float", "for", "goto",
+        "if", "int", "long", "register", "return", "short", "signed",
+        "sizeof", "static", "struct", "switch", "typedef",
+        "unsigned", "void", "printf", "while"
+    };
+    
+    for (int i = 0; i < 32; i++) {
+        if (strcmp(keywords[i], buffer) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+int main() {
+    char ch, buffer[15], operators[] = "+-*/%=";
+    FILE *fp;
+    int j = 0;
+
+    fp = fopen("flex_input.txt", "r");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return 1;
+    }
+
+    while ((ch = fgetc(fp)) != EOF) {
+        // Check for operators
+        for (int i = 0; i < 6; i++) {
+            if (ch == operators[i]) {
+                printf("%c is operator\n", ch);
+            }
+        }
+
+        // Check for identifiers/keywords
+        if (isalnum(ch)) {
+            buffer[j++] = ch;
+        } else if ((ch == ' ' || ch == '\n' || ch == '\t') && j != 0) {
+            buffer[j] = '\0';
+            if (isKeyword(buffer))
+                printf("%s is keyword\n", buffer);
+            else
+                printf("%s is identifier\n", buffer);
+            j = 0;
+        }
+    }
+
+    fclose(fp);
+    return 0;
+}
+
+main()
+{
+    int a, b, c;
+    c = a + b;
+    printf("%d", c);
+}
+
+main is keyword
+int is keyword
+a is identifier
+b is identifier
+c is identifier
+= is operator
+a is identifier
++ is operator
+b is identifier
+printf is keyword
+% is operator
+d is identifier
+c is identifier
+
+
