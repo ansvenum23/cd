@@ -1,0 +1,147 @@
+BEGIN  
+    FUNCTION FIRST(Result, c):  
+        IF c is a terminal THEN  
+            ADD c to Result  
+            RETURN  
+        ENDIF  
+
+        FOR each production P in productionSet:  
+            IF P starts with c THEN  
+                IF P → ε THEN  
+                    ADD ε to Result  
+                ELSE  
+                    FOR each symbol Y in RHS of P:  
+                        COMPUTE FIRST(Y)  
+                        ADD elements of FIRST(Y) to Result  
+                        IF ε is NOT in FIRST(Y) THEN  
+                            BREAK  
+                    END FOR  
+                ENDIF  
+            ENDIF  
+        END FOR  
+    END FUNCTION  
+
+    FUNCTION addToResultSet(Result, val):  
+        IF val is NOT in Result THEN  
+            ADD val to Result  
+        ENDIF  
+    END FUNCTION  
+
+    MAIN PROGRAM:  
+        READ numOfProductions  
+        FOR i = 1 to numOfProductions:  
+            READ production i  
+        END FOR  
+
+        DO  
+            READ character c  
+            CALL FIRST(Result, c)  
+            PRINT FIRST(c)  
+        WHILE user wants to continue  
+
+    END  
+
+
+
+
+#include <stdio.h>
+#include <ctype.h>
+
+void FIRST(char[], char);
+void addToResultSet(char[], char);
+
+int numOfProductions;
+char productionSet[10][10];
+
+int main() {
+    int i;
+    char c, choice, result[20];
+
+    printf("Enter number of productions: ");
+    scanf("%d", &numOfProductions);
+    for (i = 0; i < numOfProductions; i++) {
+        printf("Production %d: ", i + 1);
+        scanf("%s", productionSet[i]);
+    }
+
+    do {
+        printf("\nFind FIRST of: ");
+        scanf(" %c", &c);
+        FIRST(result, c);
+
+        printf("\nFIRST(%c) = { ", c);
+        for (i = 0; result[i] != '\0'; i++)
+            printf(" %c ", result[i]);
+        printf("}\n");
+
+        printf("Press 'y' to continue: ");
+        scanf(" %c", &choice);
+    } while (choice == 'y' || choice == 'Y');
+
+    return 0;
+}
+
+void FIRST(char *Result, char c) {
+    int i, j, k, foundEpsilon;
+    char subResult[20];
+    
+    if (!isupper(c)) {
+        addToResultSet(Result, c);
+        return;
+    }
+
+    for (i = 0; i < numOfProductions; i++) {
+        if (productionSet[i][0] == c) {
+            if (productionSet[i][2] == '$') 
+                addToResultSet(Result, '$');
+            else {
+                j = 2;
+                while (productionSet[i][j] != '\0') {
+                    foundEpsilon = 0;
+                    FIRST(subResult, productionSet[i][j]);
+                    
+                    for (k = 0; subResult[k] != '\0'; k++)
+                        addToResultSet(Result, subResult[k]);
+
+                    if (strchr(subResult, '$') == NULL)
+                        break;
+                    
+                    j++;
+                }
+            }
+        }
+    }
+}
+
+void addToResultSet(char Result[], char val) {
+    if (!strchr(Result, val)) {
+        int len = strlen(Result);
+        Result[len] = val;
+        Result[len + 1] = '\0';
+    }
+}
+
+
+
+
+
+
+
+
+Enter number of productions: 4
+Production 1: S=AaAb
+Production 2: S=BbBa
+Production 3: A=$
+Production 4: B=$
+
+Find FIRST of: S
+FIRST(S) = { $ a b }
+Press 'y' to continue: y
+
+Find FIRST of: A
+FIRST(A) = { $ }
+Press 'y' to continue: y
+
+Find FIRST of: B
+FIRST(B) = { $ }
+Press 'y' to continue: n
